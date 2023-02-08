@@ -5,8 +5,12 @@ import sys
 import zipfile
 from PIL import Image
 import os
+import shutil
 def pdg2pdf(pdgfile:zipfile.ZipFile, target: str):
-    pdgfile.extractall('./temp')
+    # extract all .pdg file 
+    for file in pdgfile.namelist():
+        if file[-4:] == ".pdg":
+            pdgfile.extract(file, "temp")
     pdgfile.close()
     toc:list[str] = []
     content:list[str] = []
@@ -15,7 +19,14 @@ def pdg2pdf(pdgfile:zipfile.ZipFile, target: str):
     bok:list[str] = []
     fow:list[str] = []
     leg:list[str] = []
-    for file in os.listdir('./temp'):
+    # file_path is the path of .pdg file 
+
+    file_path = "temp/"
+    if os.path.isdir("temp/" + os.listdir(file_path)[0]):
+        file_path = os.path.join('temp/', os.listdir('temp')[0])
+        file_path+='/'
+
+    for file in os.listdir(file_path):
         if file.endswith('.pdg'):
             if file.startswith('!'):
                 toc.append(file)
@@ -38,33 +49,30 @@ def pdg2pdf(pdgfile:zipfile.ZipFile, target: str):
     image_list:list[Image.Image] = []
 
     if cov1 != '':
-        image_list.append(Image.open('./temp/' + cov1))
+        image_list.append(Image.open(file_path + cov1))
 
     for b in bok:
-        image_list.append(Image.open('./temp/' + b))
+        image_list.append(Image.open(file_path + b))
 
     for l in leg:
-        image_list.append(Image.open('./temp/' + l))
+        image_list.append(Image.open(file_path + l))
 
     for f in fow:
-        image_list.append(Image.open('./temp/' + f))
+        image_list.append(Image.open(file_path + f))
 
     for t in toc:
-        image_list.append(Image.open('./temp/' + t))
+        image_list.append(Image.open(file_path + t))
 
     for c in content:
-        image_list.append(Image.open('./temp/' + c))
+        image_list.append(Image.open(file_path + c))
 
     if cov2 != '':
-        image_list.append(Image.open('./temp/' + cov2))
+        image_list.append(Image.open(file_path + cov2))
     
     image_list[0].save(target, "PDF", save_all=True, append_images=image_list[1:])
 
     # delele all temp file 
-    for file in os.listdir('./temp'):
-        os.remove('./temp/' + file)
-    os.rmdir('./temp')
-
+    shutil.rmtree("temp")
 def main():
     param:list[str] = sys.argv
     if len(param) != 3:
