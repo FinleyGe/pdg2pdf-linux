@@ -38,27 +38,27 @@ def pdg2pdf(pdgfile:zipfile.ZipFile, target: str):
     image_list:list[Image.Image] = []
 
     if cov1 != '':
-        image_list.append(Image.open('./temp/' + cov1))
+        image_list.append(Image.open('./temp/' + cov1).convert('RGB'))
 
     for b in bok:
-        image_list.append(Image.open('./temp/' + b))
+        image_list.append(Image.open('./temp/' + b).convert('RGB'))
 
     for l in leg:
-        image_list.append(Image.open('./temp/' + l))
+        image_list.append(Image.open('./temp/' + l).convert('RGB'))
 
     for f in fow:
-        image_list.append(Image.open('./temp/' + f))
+        image_list.append(Image.open('./temp/' + f).convert('RGB'))
 
     for t in toc:
-        image_list.append(Image.open('./temp/' + t))
+        image_list.append(Image.open('./temp/' + t).convert('RGB'))
 
     for c in content:
-        image_list.append(Image.open('./temp/' + c))
+        image_list.append(Image.open('./temp/' + c).convert('RGB'))
 
     if cov2 != '':
-        image_list.append(Image.open('./temp/' + cov2))
+        image_list.append(Image.open('./temp/' + cov2).convert('RGB'))
     
-    image_list[0].save(target, "PDF", save_all=True, append_images=image_list[1:])
+    image_list[0].save(target, save_all=True, append_images=image_list[1:])
 
     # delele all temp file 
     for file in os.listdir('./temp'):
