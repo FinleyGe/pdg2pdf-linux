@@ -6,6 +6,9 @@ import zipfile
 from PIL import Image
 import os
 import shutil
+import fitz
+from nipype.interfaces.io import glob
+
 def pdg2pdf(pdgfile:zipfile.ZipFile, target: str):
     # extract all .pdg file 
     for file in pdgfile.namelist():
@@ -46,30 +49,51 @@ def pdg2pdf(pdgfile:zipfile.ZipFile, target: str):
     fow.sort()
     leg.sort()
     toc.sort()
+    image_path_list:list[str] = []
     image_list:list[Image.Image] = []
 
     if cov1 != '':
+        image_path_list.append(file_path + cov1)
         image_list.append(Image.open(file_path + cov1))
 
     for b in bok:
+        image_path_list.append(file_path + b)
         image_list.append(Image.open(file_path + b))
 
     for l in leg:
+        image_path_list.append(file_path + l)
         image_list.append(Image.open(file_path + l))
 
     for f in fow:
+        image_path_list.append(file_path + f)
         image_list.append(Image.open(file_path + f))
 
     for t in toc:
+        image_path_list.append(file_path + t)
         image_list.append(Image.open(file_path + t))
 
     for c in content:
+        image_path_list.append(file_path + c)
         image_list.append(Image.open(file_path + c))
 
     if cov2 != '':
+        image_path_list.append(file_path + cov2)
         image_list.append(Image.open(file_path + cov2))
-    
-    image_list[0].save(target, "PDF", save_all=True, append_images=image_list[1:])
+
+    doc = fitz.open()
+    length = len(image_path_list)
+    now = 0
+    for img in image_path_list:
+        now += 1
+        print("\rProcessing: " + str(now) + "/" + str(length) + "    " + "{:.2f}".format(now / length * 100) + "%", end="")
+        imgdoc = fitz.open(img, filetype="png")
+        pdfbytes = imgdoc.convert_to_pdf()
+        imgpdf = fitz.open("pdf", pdfbytes)
+        doc.insert_pdf(imgpdf)
+    doc.save(target)
+    doc.close()
+
+    # image_list[0].save(target, "PDF", save_all=True, append_images=image_list[1:])
 
     # delele all temp file 
     shutil.rmtree("temp")
