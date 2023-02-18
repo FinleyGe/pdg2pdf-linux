@@ -7,8 +7,9 @@ pdg 格式是超星公司开发的电子书格式,
 直接将pdg文件组成的.zip转换为pdf文件.
 
 # 使用方法
-1. `clone` 本项目
-2. `python pdg2pdf.py input.zip output.pdf` 
+0. 安装 `python3` 和 `pip3`
+1. `clone` 本项目或者下载 release 中的源代码文件
+2. `python pdg2pdf.py input.zip output.pdf`
 
 # 注意事项
 1. zip文件内图片为类似`000001.pdg, 0000002.pdg`的文件
